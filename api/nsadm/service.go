@@ -20,6 +20,7 @@ var ErrUserNotFound = errors.New("user not found")
 var ErrNamespaceNotFound = errors.New("namespace not found")
 var ErrDuplicateID = errors.New("user already member of this namespace")
 var ErrUserOwner = errors.New("cannot remove this user")
+var ErrTokenNotFound = errors.New("token not found for this namespace")
 
 type Service interface {
 	ListNamespaces(ctx context.Context, pagination paginator.Query, filterB64 string, export bool) ([]models.Namespace, int, error)
@@ -32,6 +33,7 @@ type Service interface {
 	ListMembers(ctx context.Context, namespace string) ([]models.Member, error)
 	UpdateDataUserSecurity(ctx context.Context, status bool, tenant string) error
 	GetDataUserSecurity(ctx context.Context, tenant string) (bool, error)
+	ListTokens(ctx context.Context, namespace string) (*models.Token, error)
 }
 
 type service struct {
@@ -172,4 +174,16 @@ func (s *service) GetDataUserSecurity(ctx context.Context, tenant string) (bool,
 		return s.store.GetDataUserSecurity(ctx, tenant)
 	}
 	return false, ErrUnauthorized
+}
+
+func (s *service) ListTokens(ctx context.Context, namespace string) (*models.Token, error) {
+	ns, _ := s.store.GetNamespace(ctx, namespace)
+	if ns != nil {
+		tokens := []models.Tokens{}
+		for _, token := range ns.Tokens.(primitive.A) {
+			tokens = append(tokens, token)
+		}
+		return tokens, nil
+	}
+	return []models.Token{}, ErrTokenNotFound
 }

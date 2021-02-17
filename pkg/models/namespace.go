@@ -8,6 +8,7 @@ type Namespace struct {
 	Settings *NamespaceSettings `json:"settings"`
 	Devices  int                `json:"devices" bson:",omitempty"`
 	Sessions int                `json:"sessions" bson:",omitempty"`
+	Token    interface{}        `json:"token"`
 }
 
 type NamespaceSettings struct {
@@ -17,4 +18,9 @@ type NamespaceSettings struct {
 type Member struct {
 	ID   string `json:"id" bson:"id"`
 	Name string `json:"name,omitempty" bson:"-"`
+}
+
+type Token struct {
+	TenantID string `json:"tenant_id" bson:"tenant_id"`
+	ReadOnly bool   `json:"read_only" bson:"read_only"`
 }
