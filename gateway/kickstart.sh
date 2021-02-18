@@ -12,9 +12,13 @@
 #
 # List of URL parameters of /kickstart.sh URL:
 #
-# keepalive_interval = Specifies in seconds the keep alive message interval
-# preferred_hostname = The preferred hostname to use rather than generated
-#                      value from ethernet MAC address
+# keepalive_interval        = Specifies in seconds the keep alive message interval
+# preferred_hostname        = The preferred hostname to use rather than generated
+#                             value from ethernet MAC address
+# shellhub_docker_namespace = The namespace prefix of the agent docker repository, including
+#                             slash; e.g., "shellhubio/" or "my-docker/shellhub-"
+# version                   = The shellhub agent version/docker image tag
+#                   
 
 type docker > /dev/null 2>&1 || { echo "Docker is not instaled"; exit 1; }
 
@@ -57,4 +61,4 @@ $SUDO docker run -d \
        {% if preferred_hostname ~= '' and preferred_hostname ~= nil then %}
        -e SHELLHUB_PREFERRED_HOSTNAME={{preferred_hostname}} \
        {% end %}
-       shellhubio/agent:{{version}}
+       {{shellhub_docker_namespace}}agent:{{version}}

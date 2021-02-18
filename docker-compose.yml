@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   ssh:
-    image: shellhubio/ssh:${SHELLHUB_VERSION}
+    image: ${SHELLHUB_DOCKER_NAMESPACE}ssh:${SHELLHUB_VERSION}
     restart: unless-stopped
     environment:
       - PRIVATE_KEY=/run/secrets/ssh_private_key
@@ -15,7 +15,7 @@ services:
     networks:
       - shellhub
   api:
-    image: shellhubio/api:${SHELLHUB_VERSION}
+    image: ${SHELLHUB_DOCKER_NAMESPACE}api:${SHELLHUB_VERSION}
     restart: unless-stopped
     environment:
       - PRIVATE_KEY=/run/secrets/api_private_key
@@ -30,7 +30,7 @@ services:
     networks:
       - shellhub
   ui:
-    image: shellhubio/ui:${SHELLHUB_VERSION}
+    image: ${SHELLHUB_DOCKER_NAMESPACE}ui:${SHELLHUB_VERSION}
     restart: unless-stopped
     environment:
       - SHELLHUB_ENTERPRISE=${SHELLHUB_ENTERPRISE}
@@ -39,7 +39,7 @@ services:
     networks:
       - shellhub
   gateway:
-    image: shellhubio/gateway:${SHELLHUB_VERSION}
+    image: ${SHELLHUB_DOCKER_NAMESPACE}gateway:${SHELLHUB_VERSION}
     restart: unless-stopped
     environment:
       - SHELLHUB_VERSION=${SHELLHUB_VERSION}

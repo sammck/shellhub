@@ -28,7 +28,7 @@ jobs:
     - name: Build and publish '${{ matrix.project }}' to Docker Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: shellhubio/${{ matrix.project }}
+        name: ${{ env.SHELLHUB_DOCKER_NAMESPACE }}${{ matrix.project }}
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         tags: "latest,${{ env.RELEASE_VERSION }}"

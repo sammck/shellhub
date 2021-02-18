@@ -56,14 +56,14 @@ jobs:
         if: "!contains(github.ref, 'refs/tags/v')"
         run: |
           docker buildx build ${{ env.BUILD_OPTION }} -f agent/Dockerfile.${{ matrix.dockerfile }} \
-            --tag shellhubio/agent:${{ github.sha }}-${{ matrix.dockerfile }} \
+            --tag ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }}-${{ matrix.dockerfile }} \
             --platform linux/${{ matrix.arch }} .
 
       - name: build image from github tag
         if: "contains(github.ref, 'refs/tags/v')"
         run: |
           docker buildx build ${{ env.BUILD_OPTION }} -f agent/Dockerfile.${{ matrix.dockerfile }} \
-            --tag shellhubio/agent:${{ env.RELEASE_VERSION }}-${{ matrix.dockerfile }} \
+            --tag ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }}-${{ matrix.dockerfile }} \
             --build-arg SHELLHUB_VERSION=${{ env.RELEASE_VERSION }} \
             --platform linux/${{ matrix.arch }} .
 
@@ -88,10 +88,10 @@ jobs:
           DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
             echo "Creating the manifest"
-            docker manifest create -a shellhubio/agent:${{ github.sha }} shellhubio/agent:${{ github.sha }}-amd64 shellhubio/agent:${{ github.sha }}-arm32v6 shellhubio/agent:${{ github.sha }}-arm32v7 shellhubio/agent:${{ github.sha }}-arm64v8
+            docker manifest create -a ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }} ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }}-amd64 ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }}-arm32v6 ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }}-arm32v7 ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }}-arm64v8
 
             echo "Running amd64 manifest annotation"
-            docker manifest annotate shellhubio/agent:${{ github.sha }} shellhubio/agent:${{ github.sha }}-amd64 --os linux --arch amd64
+            docker manifest annotate ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }} ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }}-amd64 --os linux --arch amd64
 
             archname=(arm32v6 arm32v7 arm64v8)
             arch=(arm arm arm64)
@@ -99,11 +99,11 @@ jobs:
 
             for ((i = 0; i < 3; i++))  ; do
               echo "Running ${archname[i]} manifest annotation"
-              docker manifest annotate shellhubio/agent:${{ github.sha }} shellhubio/agent:${{ github.sha }}-${archname[i]} --os linux --arch ${arch[i]} --variant ${variant[i]}
+              docker manifest annotate ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }} ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }}-${archname[i]} --os linux --arch ${arch[i]} --variant ${variant[i]}
             done
 
             echo "Pushing multiarch manifest"
-            docker manifest push shellhubio/agent:${{ github.sha }}
+            docker manifest push ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ github.sha }}
 
       - name: build multiarch image from github tag
         if: contains(github.ref, 'refs/tags/v')
@@ -111,10 +111,10 @@ jobs:
           DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
             echo "Creating the manifest"
-            docker manifest create -a shellhubio/agent:${{ env.RELEASE_VERSION }} shellhubio/agent:${{ env.RELEASE_VERSION }}-amd64 shellhubio/agent:${{ env.RELEASE_VERSION }}-arm32v6 shellhubio/agent:${{ env.RELEASE_VERSION }}-arm32v7 shellhubio/agent:${{ env.RELEASE_VERSION }}-arm64v8
+            docker manifest create -a ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }} ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }}-amd64 ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }}-arm32v6 ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }}-arm32v7 ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }}-arm64v8
 
             echo "Running amd64 manifest annotation"
-            docker manifest annotate shellhubio/agent:${{ env.RELEASE_VERSION }} shellhubio/agent:${{ env.RELEASE_VERSION }}-amd64 --os linux --arch amd64
+            docker manifest annotate ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }} ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }}-amd64 --os linux --arch amd64
 
             archname=(arm32v6 arm32v7 arm64v8)
             arch=(arm arm arm64)
@@ -122,8 +122,8 @@ jobs:
 
             for ((i = 0; i < 3; i++))  ; do
               echo "Running ${archname[i]} manifest annotation"
-              docker manifest annotate shellhubio/agent:${{ env.RELEASE_VERSION }} shellhubio/agent:${{ env.RELEASE_VERSION }}-${archname[i]} --os linux --arch ${arch[i]} --variant ${variant[i]}
+              docker manifest annotate ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }} ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }}-${archname[i]} --os linux --arch ${arch[i]} --variant ${variant[i]}
             done
 
             echo "Pushing multiarch manifest"
-            docker manifest push shellhubio/agent:${{ env.RELEASE_VERSION }}
+            docker manifest push ${{ env.SHELLHUB_DOCKER_NAMESPACE }}agent:${{ env.RELEASE_VERSION }}
